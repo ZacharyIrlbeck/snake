@@ -2,12 +2,32 @@ import { useState, useEffect } from 'react'
 import './App.css'
 
 
+function Square({ ind, pos, foodPos }){
+    let classes = "square";
+
+    if(foodPos === ind){
+        classes += " food";
+    }
+
+    if(pos === ind){
+        classes += " snake";
+    }
+
+
+    return <div key={ind} className={classes}></div>;
+}
+
 function App() {
 
     const squares = new Array(20 * 20).fill();
     const [pos, setPos] = useState(0);
+    const [foodPos, setFoodPos] = useState(-1);
 
     useEffect(() => {
+        if(foodPos === -1 || pos === foodPos){
+           setFoodPos(Math.floor(Math.random() * 400)); 
+        }
+
         console.log("pos", pos);
     }, [pos]);
 
@@ -22,7 +42,6 @@ function App() {
                     diff = -20;
                     break;
                 case "ArrowDown":
-                    console.log("pos", pos);
                     diff = 20;
                     break;
                 case "ArrowLeft":
@@ -48,10 +67,9 @@ function App() {
         return () => window.removeEventListener("keydown", move);
     }, []);
 
-
     return (
         <div className="board">
-            { squares.map((_x, ind) => <div key={ind} className={pos === ind ? "snake square" : "square"}></div>) }
+            { squares.map((_x, ind) => <Square ind={ind} pos={pos} foodPos={foodPos} />) }
         </div>
     )
 }
