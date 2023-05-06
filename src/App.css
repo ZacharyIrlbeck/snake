@@ -1,0 +1,23 @@
+
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.board {
+    background: white;
+    display: grid;
+    grid-template-rows: repeat(20, auto);
+    grid-template-columns: repeat(20, auto);
+}
+
+.square {
+    border: 1px solid black;
+    height: 25px;
+    width: 25px;
+}
+
+.snake {
+    border: 1px solid red; 
+}
