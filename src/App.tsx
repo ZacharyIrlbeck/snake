@@ -14,58 +14,58 @@ function Square({ ind, pos, foodPos }){
     }
 
 
-    return <div key={ind} className={classes}></div>;
+    return <div key={ind} className={classes}>{ind}</div>;
 }
 
 function App() {
 
+    const dirs = { "ArrowUp": -20, "ArrowDown": 20, "ArrowLeft": -1, "ArrowRight": 1 };
     const squares = new Array(20 * 20).fill();
-    const [pos, setPos] = useState(0);
-    const [foodPos, setFoodPos] = useState(-1);
+    const [pos, setPos] = useState(Math.floor(Math.random() * 400));
+    const [foodPos, setFoodPos] = useState(Math.floor(Math.random() * 400));
+    const [dir, setDir] = useState(Object.keys(dirs)[Math.floor(Math.random() * 4)]);
+    const [move, setMove] = useState(false);
+    const [alive, setAlive] = useState(true);
+    const [speed, setSpeed] = useState(500);
 
+    // if the head === the food, eat the food and move to new spot
     useEffect(() => {
         if(foodPos === -1 || pos === foodPos){
            setFoodPos(Math.floor(Math.random() * 400)); 
         }
-
-        console.log("pos", pos);
     }, [pos]);
 
+    // allow user to change direction of snake
     useEffect(() => {
-       window.addEventListener("keydown", move);
+        window.addEventListener("keydown", handleKeyDown);
 
-        function move(e){
-            let diff = 0;
-
-            switch(e.key){
-                case "ArrowUp":
-                    diff = -20;
-                    break;
-                case "ArrowDown":
-                    diff = 20;
-                    break;
-                case "ArrowLeft":
-                    diff = -1;
-                    break;
-                case "ArrowRight":
-                    diff = 1;
-                    break;
+        function handleKeyDown({ key }){
+            if(Object.keys(dirs).includes(key)){
+                setDir(key);
             }
+        }
 
-            setPos(prevPos => {
-                const newPos = prevPos + diff;
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    })
 
-                if(newPos >= 0 && newPos <= 399){
-                    return newPos;
+    // move the snake
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setPos((prevPos) => {
+                const diff = dirs[dir]
+                let newPos = prevPos + diff;
+
+                if(newPos < 0 || newPos > 399){
+                    newPos = prevPos - diff;
                 }
 
-                return prevPos;
+                return newPos;
             });
+        }, speed);
 
 
-        }
-        return () => window.removeEventListener("keydown", move);
-    }, []);
+        return () => clearInterval(interval);
+    }, [move, dir])
 
     return (
         <div className="board">
